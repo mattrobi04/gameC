@@ -1,1 +1,1 @@
-An implementation of a pong game in C
+An implementation of PONG in C
