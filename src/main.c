@@ -73,16 +73,14 @@ void process_input() {
                     game_is_running = FALSE;
                     break;
                 case SDLK_UP:
-                    player.y -= 10;
+                    if(player.y >= 10) {
+                        player.y -= 10;
+                    }
                     break;
                 case SDLK_DOWN:
-                    player.y += 10;
-                    break;
-                case SDLK_LEFT:
-                    player.x -= 10;
-                    break;
-                case SDLK_RIGHT:
-                    player.x += 10;
+                    if(player.y <= WINDOW_HEIGHT - player.height) {
+                        player.y += 10;
+                    }
                     break;
             }
             break;
@@ -132,6 +130,7 @@ void update() {
     } else {
         robot.y -= 70 * delta_time;   // Move up
     }
+
 }
 
 void render() {
