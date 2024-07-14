@@ -8,6 +8,11 @@ SDL_Renderer* renderer = NULL;
 
 int last_frame_time = 0;
 
+struct score {
+    int p1_score;
+    int p2_score;
+} score;
+
 struct player {
     float x;
     float y;
@@ -20,6 +25,8 @@ struct pong_ball {
     float y;
     float width;
     float height;
+    int x_direction;
+    int y_direction;
 } pong_ball;
 
 struct robot {
@@ -94,12 +101,14 @@ void setup() {
     player.height = 30;
 
     pong_ball.x = 400;
-    pong_ball.y = 500;
+    pong_ball.y = 400;
     pong_ball.width = 25;
     pong_ball.height = 25;
+    pong_ball.x_direction = 1;
+    pong_ball.y_direction = 1;
 
     robot.x = WINDOW_WIDTH - 20;
-    robot.y = 30;
+    robot.y = 400;
     robot.width = 15;
     robot.height = 30;
     robot.direction = 1;
@@ -116,14 +125,18 @@ void update() {
     float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
  
     last_frame_time = SDL_GetTicks();
-    player.x += 0.1 * delta_time;
-    player.y += 0.1 * delta_time;
+    // player.y += 3 * delta_time;
     
+    //  pong_ball.x += 20 * delta_time;
+    // pong_ball.y += 20 * delta_time;
+
     if (robot.y <= 0) {
         robot.direction = 1;  // Moving down
     } else if (robot.y >= WINDOW_HEIGHT - robot.height) {
         robot.direction = -1; // Moving up
     }
+
+
 
     if (robot.direction == 1) {
         robot.y += 70 * delta_time;  // Move down
@@ -131,7 +144,43 @@ void update() {
         robot.y -= 70 * delta_time;   // Move up
     }
 
+    pong_ball.x += pong_ball.x_direction * 50 * delta_time;
+    pong_ball.y += pong_ball.y_direction * 70 * delta_time;
+
+    
+    if (pong_ball.y <= 0 || pong_ball.y >= WINDOW_HEIGHT - pong_ball.height) {
+        pong_ball.y_direction = -pong_ball.y_direction; 
+    }
+
+    if (pong_ball.x <= 0 || pong_ball.x >= WINDOW_WIDTH - pong_ball.width) {
+        // pong_ball.x_direction = -pong_ball.x_direction; 
+        score.p1_score++;
+        // printf("Player one scored!");
+
+    } 
+    if(pong_ball.x >= WINDOW_WIDTH - pong_ball.width) {
+        score.p2_score++;
+        // printf("Player two scored!");
+    }
+
+    if (pong_ball.x <= player.x + player.width && 
+        pong_ball.x + pong_ball.width >= player.x && 
+        pong_ball.y <= player.y + player.height && 
+        pong_ball.y + pong_ball.height >= player.y) {
+        pong_ball.x_direction = -pong_ball.x_direction; 
+        pong_ball.y_direction = -pong_ball.y_direction; 
+    }
+
+    if (pong_ball.x <= robot.x + robot.width && 
+        pong_ball.x + pong_ball.width >= robot.x && 
+        pong_ball.y <= robot.y + robot.height && 
+        pong_ball.y + pong_ball.height >= robot.y) {
+        pong_ball.x_direction = -pong_ball.x_direction; 
+        pong_ball.y_direction = -pong_ball.y_direction;
+    }   
+
 }
+
 
 void render() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
